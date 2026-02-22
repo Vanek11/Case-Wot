@@ -19,6 +19,7 @@ export function Inventory({ inventory, lang }) {
             .map((entry, i) => (
               <div key={i} className="inventory__item">
                 <PrizeCard prize={entry.prize} compact />
+                <span className="inventory__name">{entry.prize?.name ?? "—"}</span>
                 {entry.isGuaranteed && (
                   <span className="inventory__badge">Гарант</span>
                 )}
