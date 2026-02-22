@@ -6,9 +6,10 @@ import { cases as allCases, getCaseById } from "../config/cases";
 import { t } from "../config/i18n";
 import "./AdminDashboard.css";
 
-export function AdminDashboard({ users, onClose, lang }) {
+export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpdated }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [balanceEdit, setBalanceEdit] = useState("");
+  const [accEdit, setAccEdit] = useState({ credits: "", bonds: "", freexp: "", tickets: "" });
   const [simResult, setSimResult] = useState(null);
   const [simRunning, setSimRunning] = useState(false);
 
@@ -23,7 +24,45 @@ export function AdminDashboard({ users, onClose, lang }) {
     state.balance = b;
     saveState(state, selectedUserId);
     setBalanceEdit("");
-  }, [selectedUserId, balanceEdit]);
+    if (String(selectedUserId) === String(currentUserId) && onStateUpdated) onStateUpdated(state);
+  }, [selectedUserId, balanceEdit, currentUserId, onStateUpdated]);
+
+  const handleSaveAccumulated = useCallback(() => {
+    if (!selectedUserId) return;
+    const state = loadState(selectedUserId) || { balance: 1000, cases: {}, inventory: [], accumulatedResources: {} };
+    const prev = state.accumulatedResources ?? { credits: 0, bonds: 0, freexp: 0, tickets: 0 };
+    const parseVal = (s, fallback) => {
+      if (s === "" || s == null) return fallback ?? 0;
+      const cleaned = String(s).replace(/\s/g, "");
+      if (!cleaned) return fallback ?? 0;
+      if (/^[\d+\-]+$/.test(cleaned) && /[\d]/.test(cleaned)) {
+        const parts = cleaned.split(/([+-])/).filter(Boolean);
+        let sum = 0;
+        let sign = 1;
+        for (const p of parts) {
+          if (p === "+") sign = 1;
+          else if (p === "-") sign = -1;
+          else {
+            const n = parseInt(p, 10);
+            if (!isNaN(n)) sum += sign * n;
+          }
+        }
+        const n = Math.round(sum);
+        return isNaN(n) ? (fallback ?? 0) : Math.max(0, n);
+      }
+      const n = parseInt(cleaned, 10);
+      return isNaN(n) ? (fallback ?? 0) : Math.max(0, n);
+    };
+    state.accumulatedResources = {
+      credits: parseVal(accEdit.credits, prev.credits),
+      bonds: parseVal(accEdit.bonds, prev.bonds),
+      freexp: parseVal(accEdit.freexp, prev.freexp),
+      tickets: parseVal(accEdit.tickets, prev.tickets),
+    };
+    saveState(state, selectedUserId);
+    setAccEdit({ credits: "", bonds: "", freexp: "", tickets: "" });
+    if (String(selectedUserId) === String(currentUserId) && onStateUpdated) onStateUpdated(state);
+  }, [selectedUserId, accEdit, currentUserId, onStateUpdated]);
 
   const runSimulation = useCallback(async (caseId, count = 1000) => {
     setSimRunning(true);
@@ -83,6 +122,13 @@ export function AdminDashboard({ users, onClose, lang }) {
                 setSelectedUserId(u.id);
                 const state = loadState(u.id);
                 setBalanceEdit(state?.balance?.toString() ?? "1000");
+                const acc = state?.accumulatedResources ?? {};
+                setAccEdit({
+                  credits: String(acc.credits ?? 0),
+                  bonds: String(acc.bonds ?? 0),
+                  freexp: String(acc.freexp ?? 0),
+                  tickets: String(acc.tickets ?? 0),
+                });
               }}
             >
               <span>{u.login}</span>
@@ -95,19 +141,74 @@ export function AdminDashboard({ users, onClose, lang }) {
         </div>
 
         {selectedUser && (
-          <div className="admin-dashboard__balance-edit">
-            <h5>Изменить баланс: {selectedUser.login}</h5>
-            <input
-              type="number"
-              value={balanceEdit}
-              onChange={(e) => setBalanceEdit(e.target.value)}
-              min={0}
-              className="admin-dashboard__input"
-            />
-            <button className="btn btn--secondary" onClick={handleSaveBalance}>
-              Сохранить
-            </button>
-          </div>
+          <>
+            <div className="admin-dashboard__balance-edit">
+              <h5>Изменить баланс: {selectedUser.login}</h5>
+              <input
+                type="number"
+                value={balanceEdit}
+                onChange={(e) => setBalanceEdit(e.target.value)}
+                min={0}
+                className="admin-dashboard__input"
+              />
+              <button className="btn btn--secondary" onClick={handleSaveBalance}>
+                Сохранить
+              </button>
+            </div>
+            <div className="admin-dashboard__balance-edit admin-dashboard__accumulated-edit">
+              <h5>Накопленные призы (кредиты, боны, свободный опыт, билеты натиска)</h5>
+              <p className="admin-dashboard__hint">При выдаче призов игроку — уменьшите значения. Можно ввести выражение: 4000000-2500000 → 1500000</p>
+              <div className="admin-dashboard__acc-grid">
+                <label>
+                  <span>Кредиты</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={accEdit.credits}
+                    onChange={(e) => setAccEdit((a) => ({ ...a, credits: e.target.value }))}
+                    placeholder="4000000-2500000"
+                    className="admin-dashboard__input"
+                  />
+                </label>
+                <label>
+                  <span>Боны</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={accEdit.bonds}
+                    onChange={(e) => setAccEdit((a) => ({ ...a, bonds: e.target.value }))}
+                    placeholder="100-50"
+                    className="admin-dashboard__input"
+                  />
+                </label>
+                <label>
+                  <span>Свободный опыт</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={accEdit.freexp}
+                    onChange={(e) => setAccEdit((a) => ({ ...a, freexp: e.target.value }))}
+                    placeholder="50000-10000"
+                    className="admin-dashboard__input"
+                  />
+                </label>
+                <label>
+                  <span>Билеты натиска</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={accEdit.tickets}
+                    onChange={(e) => setAccEdit((a) => ({ ...a, tickets: e.target.value }))}
+                    placeholder="20-5"
+                    className="admin-dashboard__input"
+                  />
+                </label>
+              </div>
+              <button className="btn btn--secondary" onClick={handleSaveAccumulated}>
+                Сохранить накопленные
+              </button>
+            </div>
+          </>
         )}
       </section>
 

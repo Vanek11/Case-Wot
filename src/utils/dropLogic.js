@@ -143,6 +143,15 @@ export const applyDrop = (state, result, caseId, caseCost = 0, rewardType = "bra
     }
   }
 
+  const res = result.prize;
+  const accKey = res?.type && ["credits", "bonds", "freexp", "tickets"].includes(res.type) ? res.type : null;
+  const amount = typeof res?.amount === "number" && res.amount > 0 ? res.amount : 0;
+  const prev = state.accumulatedResources ?? { credits: 0, bonds: 0, freexp: 0, tickets: 0 };
+  const accumulatedResources =
+    accKey && amount
+      ? { ...prev, [accKey]: (prev[accKey] ?? 0) + amount }
+      : prev;
+
   return {
     ...state,
     balance,
@@ -150,12 +159,15 @@ export const applyDrop = (state, result, caseId, caseCost = 0, rewardType = "bra
     inventory,
     achievements: newAchievements,
     branchProgressWonPrizeIds,
+    accumulatedResources,
     cases: {
       ...(state.cases || {}),
       [caseId]: newCaseState,
     },
   };
 };
+
+const DEFAULT_ACCUMULATED = { credits: 0, bonds: 0, freexp: 0, tickets: 0 };
 
 export const getInitialState = () => ({
   totalOpened: 0,
@@ -164,7 +176,20 @@ export const getInitialState = () => ({
   cases: {},
   balance: 1000,
   branchProgressWonPrizeIds: [],
+  accumulatedResources: { ...DEFAULT_ACCUMULATED },
 });
+
+/** Сумма ресурсов из инвентаря — для миграции старых сохранений */
+export const computeAccumulatedFromInventory = (inventory) => {
+  const acc = { credits: 0, bonds: 0, freexp: 0, tickets: 0 };
+  (inventory || []).forEach((e) => {
+    const p = e?.prize;
+    const key = p?.type && ["credits", "bonds", "freexp", "tickets"].includes(p.type) ? p.type : null;
+    const amt = typeof p?.amount === "number" && p.amount > 0 ? p.amount : 0;
+    if (key && amt) acc[key] += amt;
+  });
+  return acc;
+};
 
 export const buildRouletteItems = (winningPrize, prizePool, count = 45) => {
   const pool = prizePool || [];

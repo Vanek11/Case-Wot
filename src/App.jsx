@@ -179,14 +179,19 @@ function App() {
 
       {showAdmin && isAdmin && (
         <div className="app__admin-wrap">
-          <AdminDashboard onClose={() => setShowAdmin(false)} lang={lang} />
+          <AdminDashboard
+            onClose={() => setShowAdmin(false)}
+            lang={lang}
+            currentUserId={user?.id}
+            onStateUpdated={(s) => s && setState(s)}
+          />
         </div>
       )}
 
       <main className="app__main">
         {mainTab === "inventory" && (
           <div className="app__inventory-tab">
-            <Inventory inventory={state.inventory} lang={lang} />
+            <Inventory inventory={state.inventory} accumulatedResources={state.accumulatedResources} lang={lang} />
           </div>
         )}
 

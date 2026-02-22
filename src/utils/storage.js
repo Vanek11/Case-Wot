@@ -3,6 +3,8 @@
  * Поддержка per-user при передаче userId.
  */
 
+import { computeAccumulatedFromInventory } from "./dropLogic.js";
+
 const STORAGE_KEY = "case-wot-state";
 const USER_PREFIX = "case-wot-user-";
 const SETTINGS_KEY = "case-wot-settings";
@@ -30,6 +32,9 @@ const migrateState = (parsed) => {
       }
     }
     parsed.branchProgressWonPrizeIds = [...won];
+  }
+  if (!parsed.accumulatedResources) {
+    parsed.accumulatedResources = computeAccumulatedFromInventory(parsed.inventory);
   }
   return parsed;
 };

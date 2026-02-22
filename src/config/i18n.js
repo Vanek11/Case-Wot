@@ -66,6 +66,11 @@ export const translations = {
     ach_first_case: "Первое открытие",
     ach_first_main: "Первый главный приз",
     ach_first_guaranteed: "Первый гарант",
+    accumulated_resources: "Накопленные призы",
+    credits: "Кредиты",
+    bonds: "Боны",
+    freexp: "Свободный опыт",
+    tickets: "Билеты натиска",
   },
   en: {
     app_title: "Cases with Guaranteed Prize",
@@ -130,6 +135,11 @@ export const translations = {
     ach_first_case: "First open",
     ach_first_main: "First main prize",
     ach_first_guaranteed: "First guaranteed",
+    accumulated_resources: "Accumulated prizes",
+    credits: "Credits",
+    bonds: "Bonds",
+    freexp: "Free XP",
+    tickets: "Tickets",
   },
 };
 
