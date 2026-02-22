@@ -191,6 +191,7 @@ function App() {
               selectedCaseId={null}
               onSelect={handleSelectCase}
               lang={lang}
+              inventory={state.inventory}
               casesStats={Object.fromEntries(
                 allCases.map((c) => [
                   c.id,
