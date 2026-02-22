@@ -16,20 +16,24 @@ export function Roulette({
   const [animating, setAnimating] = useState(false);
   const containerRef = useRef(null);
   const itemWidth = 130;
+  const gapPx = 8; // 0.5rem — должен совпадать с gap в Roulette.css
   const visibleCount = 5;
   const duration = durationMs ?? ROULETTE_SCROLL_DURATION_MS;
+  /** Позиция выигрыша: при наступлении на линию — передний (левый) край карточки совпадает с центром вьюпорта */
+  const viewportWidth = visibleCount * itemWidth + (visibleCount - 1) * gapPx;
 
   useEffect(() => {
     if (!isAnimating || !prizes.length || winningIndex === undefined) return;
 
     setAnimating(true);
     const itemCount = prizes.length;
-    const totalWidth = itemCount * itemWidth;
-    const centerOffset = (visibleCount * itemWidth) / 2 - itemWidth / 2;
-    const targetOffset = winningIndex * itemWidth - centerOffset;
+    const totalTrackWidth = itemCount * itemWidth + (itemCount - 1) * gapPx;
+    const winningItemLeftEdge = winningIndex * (itemWidth + gapPx);
+    const viewportCenter = viewportWidth / 2;
+    const targetOffset = winningItemLeftEdge - viewportCenter;
     const clampedTarget = Math.max(
       0,
-      Math.min(targetOffset, totalWidth - visibleCount * itemWidth)
+      Math.min(targetOffset, totalTrackWidth - viewportWidth)
     );
 
     const startTime = Date.now();
