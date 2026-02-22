@@ -33,6 +33,7 @@ function App() {
 
   const [screen, setScreen] = useState("cases"); // cases | case-detail | opener
   const [mainTab, setMainTab] = useState("cases"); // cases | inventory
+  const [caseCategoryTab, setCaseCategoryTab] = useState("progress"); // progress | reset | lbz
   const [selectedCase, setSelectedCase] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showChances, setShowChances] = useState(false);
@@ -82,13 +83,17 @@ function App() {
 
   const handleOpenCase = useCallback(() => {
     if (!selectedCase) return;
+    const cState = state.cases?.[selectedCase.id];
+    if (selectedCase.rewardType === "lbz" && cState?.closed) {
+      return;
+    }
     const cost = selectedCase.cost ?? 10;
     if ((state.balance ?? 0) < cost) {
       alert("Недостаточно средств на балансе");
       return;
     }
     setScreen("opener");
-  }, [selectedCase, state.balance]);
+  }, [selectedCase, state.balance, state.cases]);
 
   const caseData = selectedCase;
   const caseId = caseData?.id;
@@ -187,7 +192,31 @@ function App() {
 
         {mainTab === "cases" && screen === "cases" && (
           <>
+            <div className="app__case-tabs">
+              <button
+                type="button"
+                className={`btn btn--ghost app__case-tab ${caseCategoryTab === "progress" ? "active" : ""}`}
+                onClick={() => setCaseCategoryTab("progress")}
+              >
+                {t("tab_progress", lang)}
+              </button>
+              <button
+                type="button"
+                className={`btn btn--ghost app__case-tab ${caseCategoryTab === "reset" ? "active" : ""}`}
+                onClick={() => setCaseCategoryTab("reset")}
+              >
+                {t("tab_reset", lang)}
+              </button>
+              <button
+                type="button"
+                className={`btn btn--ghost app__case-tab ${caseCategoryTab === "lbz" ? "active" : ""}`}
+                onClick={() => setCaseCategoryTab("lbz")}
+              >
+                {t("tab_lbz", lang)}
+              </button>
+            </div>
             <CaseSelector
+              activeCategory={caseCategoryTab}
               selectedCaseId={null}
               onSelect={handleSelectCase}
               lang={lang}
@@ -199,8 +228,9 @@ function App() {
                     ? {
                         totalOpened: state.cases[c.id].totalOpened ?? 0,
                         casesUntilGuaranteed: state.cases[c.id].casesUntilGuaranteed ?? GUARANTEED_AFTER,
+                        closed: state.cases[c.id].closed ?? false,
                       }
-                    : { totalOpened: 0, casesUntilGuaranteed: GUARANTEED_AFTER },
+                    : { totalOpened: 0, casesUntilGuaranteed: GUARANTEED_AFTER, closed: false },
                 ])
               )}
             />
@@ -228,13 +258,18 @@ function App() {
                   </span>
                 </div>
               </div>
-              <div className="app__buttons">
+                <div className="app__buttons">
                   <button
                     className="btn btn--primary btn--lg"
                     onClick={handleOpenCase}
-                    disabled={(state.balance ?? 0) < (caseData?.cost ?? 10)}
+                    disabled={
+                      (caseData?.rewardType === "lbz" && caseState?.closed) ||
+                      (state.balance ?? 0) < (caseData?.cost ?? 10)
+                    }
                   >
-                    {t("open_case", lang)}
+                    {caseData?.rewardType === "lbz" && caseState?.closed
+                      ? t("case_completed", lang)
+                      : t("open_case", lang)}
                   </button>
                   <label className="app__quick-open">
                     <input
@@ -247,7 +282,7 @@ function App() {
                 </div>
 
                 {showChances && caseData && (
-                  <ChancesPage caseData={caseData} lang={lang} />
+                  <ChancesPage caseData={caseData} caseState={caseState} state={state} lang={lang} />
                 )}
                 <button
                   className="btn btn--ghost"

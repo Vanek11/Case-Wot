@@ -1,12 +1,32 @@
 /**
  * Логика выпадения призов.
- * Поддерживает разные кейсы с разными пулами призов.
+ * rewardType: branch_progress (приз убирается из пула глобально по всем кейсам прокачки) | branch_reset | lbz.
  */
 
 import { getMainPrizes, getRegularPrizes } from "../config/prizes.js";
+import { getBranchProgressWonIds } from "../config/cases.js";
 
 const MAIN_PRIZE_CHANCE = 0.02;
 const GUARANTEED_AFTER = 30;
+
+/** Идентификатор приза для учёта выигранных (backendId или id) */
+const getPrizeId = (p) => p?.backendId ?? p?.id ?? "";
+
+/**
+ * Текущий пул для ролла с учётом rewardType.
+ * branch_progress: убираем главные призы, уже выигранные в ЛЮБОМ кейсе прокачки (нации + классы).
+ * branch_reset, lbz: полный пул.
+ */
+export const getPoolForCase = (prizePool, caseState, rewardType, state = null) => {
+  const pool = prizePool || [];
+  if (rewardType !== "branch_progress") return pool;
+  const wonIds = new Set(state ? getBranchProgressWonIds(state) : []);
+  if (wonIds.size === 0) return pool;
+  return pool.filter((p) => {
+    if (!p.isGuaranteed) return true;
+    return !wonIds.has(getPrizeId(p));
+  });
+};
 
 const normalizeWeights = (items) => {
   const total = items.reduce((sum, p) => sum + p.chance, 0);
@@ -59,11 +79,13 @@ export const rollPrize = (casesUntilGuaranteed, prizePool) => {
   };
 };
 
-export const applyDrop = (state, result, caseId, caseCost = 0) => {
+export const applyDrop = (state, result, caseId, caseCost = 0, rewardType = "branch_reset") => {
   const caseState = state.cases?.[caseId] || {
     totalOpened: 0,
     casesUntilGuaranteed: GUARANTEED_AFTER,
     history: [],
+    wonMainPrizeIds: [],
+    closed: false,
   };
 
   const newCaseState = {
@@ -74,6 +96,16 @@ export const applyDrop = (state, result, caseId, caseCost = 0) => {
       ...(caseState.history || []),
     ].slice(0, 50),
   };
+
+  if (rewardType === "branch_progress" && result.prize?.isGuaranteed) {
+    const id = getPrizeId(result.prize);
+    if (id && !(caseState.wonMainPrizeIds || []).includes(id)) {
+      newCaseState.wonMainPrizeIds = [...(caseState.wonMainPrizeIds || []), id];
+    }
+  }
+  if (rewardType === "lbz" && result.prize?.isGuaranteed) {
+    newCaseState.closed = true;
+  }
 
   if (result.isGuaranteed) {
     newCaseState.casesUntilGuaranteed = GUARANTEED_AFTER;
@@ -103,12 +135,21 @@ export const applyDrop = (state, result, caseId, caseCost = 0) => {
 
   const balance = Math.max(0, (state.balance ?? 0) - caseCost);
 
+  let branchProgressWonPrizeIds = state.branchProgressWonPrizeIds ?? [];
+  if (rewardType === "branch_progress" && result.prize?.isGuaranteed) {
+    const id = getPrizeId(result.prize);
+    if (id && !branchProgressWonPrizeIds.includes(id)) {
+      branchProgressWonPrizeIds = [...branchProgressWonPrizeIds, id];
+    }
+  }
+
   return {
     ...state,
     balance,
     totalOpened,
     inventory,
     achievements: newAchievements,
+    branchProgressWonPrizeIds,
     cases: {
       ...(state.cases || {}),
       [caseId]: newCaseState,
@@ -122,6 +163,7 @@ export const getInitialState = () => ({
   achievements: [],
   cases: {},
   balance: 1000,
+  branchProgressWonPrizeIds: [],
 });
 
 export const buildRouletteItems = (winningPrize, prizePool, count = 45) => {

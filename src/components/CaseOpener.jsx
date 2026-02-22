@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Roulette } from "./Roulette";
 import { PrizeCard } from "./PrizeCard";
 import { Particles } from "./Particles";
-import { rollPrize, applyDrop, buildRouletteItems, GUARANTEED_AFTER } from "../utils/dropLogic";
+import { rollPrize, applyDrop, buildRouletteItems, getPoolForCase, GUARANTEED_AFTER } from "../utils/dropLogic";
 import { prizes } from "../config/prizes";
 import { ROULETTE_SCROLL_DURATION_MS } from "../config/settings";
 import { COUNTDOWN_ENABLED } from "../config/settings";
@@ -44,8 +44,12 @@ export function CaseOpener({
   const caseState = state.cases?.[caseId] ?? {
     casesUntilGuaranteed: GUARANTEED_AFTER,
     history: [],
+    wonMainPrizeIds: [],
+    closed: false,
   };
-  const prizePool = caseData?.prizes?.length ? caseData.prizes : prizes;
+  const rewardType = caseData?.rewardType ?? "branch_reset";
+  const fullPool = caseData?.prizes?.length ? caseData.prizes : prizes;
+  const prizePool = getPoolForCase(fullPool, caseState, rewardType, state);
 
   const scrollDuration = useQuickScroll ? QUICK_SCROLL_DURATION : ROULETTE_SCROLL_DURATION_MS;
 
@@ -104,10 +108,10 @@ export function CaseOpener({
   const handleClaim = useCallback(() => {
     if (!rouletteData) return;
     const cost = caseData?.cost ?? 0;
-    const newState = applyDrop(state, rouletteData.result, caseId, cost);
+    const newState = applyDrop(state, rouletteData.result, caseId, cost, rewardType);
     onStateChange(newState);
     onClose?.();
-  }, [rouletteData, state, caseId, caseData?.cost, onStateChange, onClose]);
+  }, [rouletteData, state, caseId, caseData?.cost, rewardType, onStateChange, onClose]);
 
   useEffect(() => {
     if (quickOpen && !rouletteData) {

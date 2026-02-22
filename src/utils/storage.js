@@ -7,6 +7,8 @@ const STORAGE_KEY = "case-wot-state";
 const USER_PREFIX = "case-wot-user-";
 const SETTINGS_KEY = "case-wot-settings";
 
+const BRANCH_PROGRESS_IDS = ["nation_ussr", "nation_usa", "nation_germany", "nation_uk", "nation_france", "nation_czechoslovakia", "nation_china", "nation_japan", "nation_poland", "nation_sweden", "nation_italy", "nation_alliance", "class_ht", "class_mt", "class_lt", "class_td", "class_spg"];
+
 const migrateState = (parsed) => {
   if (!parsed) return null;
   if (!parsed.cases && parsed.totalOpened !== undefined) {
@@ -20,6 +22,15 @@ const migrateState = (parsed) => {
     parsed.achievements = parsed.achievements || [];
   }
   if (parsed.balance === undefined) parsed.balance = 1000;
+  if (!parsed.branchProgressWonPrizeIds || parsed.branchProgressWonPrizeIds.length === 0) {
+    const won = new Set();
+    for (const cid of BRANCH_PROGRESS_IDS) {
+      for (const id of parsed?.cases?.[cid]?.wonMainPrizeIds || []) {
+        won.add(id);
+      }
+    }
+    parsed.branchProgressWonPrizeIds = [...won];
+  }
   return parsed;
 };
 
