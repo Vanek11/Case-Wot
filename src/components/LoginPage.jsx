@@ -59,9 +59,6 @@ export function LoginPage({ onLogin, onRegister, lang }) {
       >
         {isRegister ? "Уже есть аккаунт? Войти" : "Нет аккаунта? Регистрация"}
       </button>
-      {!isRegister && (
-        <p className="login-page__hint">admin/admin или player/player</p>
-      )}
     </div>
   );
 }
