@@ -1,0 +1,115 @@
+.admin-dashboard {
+  background: rgba(10, 10, 20, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem;
+  max-width: 500px;
+  margin-top: 1rem;
+}
+
+.admin-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.admin-dashboard__header h3 {
+  margin: 0;
+  color: #00d4ff;
+}
+
+.admin-dashboard__section {
+  margin-bottom: 1.5rem;
+}
+
+.admin-dashboard__section h4 {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin: 0 0 0.5rem;
+}
+
+.admin-dashboard__players {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-dashboard__player {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.admin-dashboard__player:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.admin-dashboard__player--selected {
+  border-color: #00d4ff;
+}
+
+.admin-dashboard__role {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.admin-dashboard__balance-edit {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-dashboard__balance-edit h5 {
+  width: 100%;
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+}
+
+.admin-dashboard__input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #e2e8f0;
+  width: 100px;
+}
+
+.admin-dashboard__sim-cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-dashboard__sim-result {
+  margin-top: 1rem;
+}
+
+.admin-dashboard__sim-result p {
+  margin: 0 0 0.5rem;
+  color: #94a3b8;
+}
+
+.admin-dashboard__table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+}
+
+.admin-dashboard__table th,
+.admin-dashboard__table td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(100, 100, 120, 0.3);
+}
+
+.admin-dashboard__table th {
+  color: #00d4ff;
+}

@@ -1,0 +1,30 @@
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particles__item {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--size, 6px);
+  height: var(--size, 6px);
+  background: var(--color, #f59e0b);
+  border-radius: 50%;
+  animation: particle-burst var(--duration) var(--delay) ease-out forwards;
+  opacity: 0;
+  box-shadow: 0 0 8px var(--color);
+}
+
+@keyframes particle-burst {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y)) scale(0);
+    opacity: 0;
+  }
+}

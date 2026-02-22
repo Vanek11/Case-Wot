@@ -1,0 +1,73 @@
+.admin-panel {
+  background: rgba(10, 10, 20, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem;
+  max-width: 500px;
+}
+
+.admin-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.admin-panel__header h3 {
+  margin: 0;
+  color: #00d4ff;
+  font-size: 1.1rem;
+}
+
+.admin-panel__desc {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.admin-panel__stats {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.admin-panel__stats p {
+  color: #e2e8f0;
+  margin: 0 0 0.75rem;
+}
+
+.admin-panel__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin-panel__table th,
+.admin-panel__table td {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(100, 100, 120, 0.3);
+}
+
+.admin-panel__table th {
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+.admin-panel__table td {
+  color: #cbd5e1;
+}
+
+.admin-panel__badge {
+  margin-left: 0.35rem;
+  font-size: 0.7rem;
+  background: #f59e0b;
+  color: #000;
+  padding: 0.1rem 0.25rem;
+  border-radius: 3px;
+}
+
+.btn--sm {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+}

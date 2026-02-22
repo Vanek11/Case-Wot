@@ -1,0 +1,95 @@
+.case-opener {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.case-opener--idle {
+  min-height: 300px;
+  justify-content: center;
+}
+
+.case-opener__title {
+  font-size: 1.75rem;
+  color: #00d4ff;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  margin: 0;
+}
+
+.case-opener__hint {
+  color: #94a3b8;
+  margin: 0;
+}
+
+.case-opener__hint strong {
+  color: #00d4ff;
+}
+
+.case-opener__back {
+  margin-top: 1rem;
+}
+
+.case-opener--preview {
+  padding: 1rem 0.5rem;
+}
+
+.case-opener__roulette-wrap {
+  width: 100%;
+  max-width: 700px;
+}
+
+.case-opener__countdown {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #00d4ff;
+  text-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+  margin: 0.5rem 0;
+  animation: countdown-pulse 0.5s ease-in-out;
+}
+
+.case-opener__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.case-opener--spinning {
+  padding: 2rem 1rem;
+}
+
+.case-opener--result {
+  min-height: 400px;
+  justify-content: center;
+}
+
+.case-opener__won-title {
+  font-size: 1.5rem;
+  color: #10b981;
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+  margin: 0;
+}
+
+@keyframes countdown-pulse {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.case-opener__guaranteed-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  font-weight: 700;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+}

@@ -1,0 +1,67 @@
+.drop-history {
+  background: rgba(15, 15, 25, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.drop-history__title {
+  font-size: 1rem;
+  color: #00d4ff;
+  margin: 0 0 0.75rem;
+}
+
+.drop-history__empty {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.drop-history__list {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 212, 255, 0.3) transparent;
+}
+
+.drop-history__list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.drop-history__list::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 2px;
+}
+
+.drop-history__item {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.drop-history__name {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.drop-history__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.6rem;
+  background: #f59e0b;
+  color: #000;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  font-weight: 700;
+}

@@ -1,0 +1,46 @@
+.chances-page {
+  background: rgba(15, 15, 25, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  margin-top: 1rem;
+}
+
+.chances-page__title {
+  font-size: 1rem;
+  color: #00d4ff;
+  margin: 0 0 0.75rem;
+}
+
+.chances-page__table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+}
+
+.chances-page__table th,
+.chances-page__table td {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(100, 100, 120, 0.3);
+}
+
+.chances-page__table th {
+  color: #94a3b8;
+}
+
+.chances-page__row--common {
+  color: #9ca3af;
+}
+
+.chances-page__row--rare {
+  color: #60a5fa;
+}
+
+.chances-page__row--epic {
+  color: #a78bfa;
+}
+
+.chances-page__row--legendary {
+  color: #fbbf24;
+}

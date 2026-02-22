@@ -1,0 +1,52 @@
+.case-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  background: rgba(20, 20, 35, 0.8);
+  border: 2px solid rgba(0, 212, 255, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  min-width: 0;
+}
+
+.case-card:hover {
+  border-color: rgba(0, 212, 255, 0.5);
+}
+
+.case-card--selected {
+  border-color: #00d4ff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.case-card__image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.case-card__name {
+  text-align: center;
+}
+
+.case-card__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.case-card__stats span:first-child::before {
+  content: "Откр: ";
+}
+
+.case-card__stats span:last-child::before {
+  content: "Гарант: ";
+}

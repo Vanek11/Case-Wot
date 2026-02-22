@@ -1,0 +1,61 @@
+.roulette {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.roulette__viewport {
+  overflow: hidden;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(15, 15, 25, 0.95) 20%,
+    rgba(15, 15, 25, 0.95) 80%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  padding: 1rem 0;
+}
+
+.roulette__track {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  align-items: center;
+  transition: none;
+  will-change: transform;
+}
+
+.roulette__track:has(.roulette__item--winner) {
+  transition: transform 0.05s linear;
+}
+
+.roulette__item {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.roulette__item--winner .prize-card {
+  animation: prize-pulse 0.6s ease-in-out 3;
+}
+
+.roulette__center-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    #00d4ff 20%,
+    #00d4ff 80%,
+    transparent
+  );
+  box-shadow: 0 0 20px #00d4ff;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
