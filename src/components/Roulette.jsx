@@ -15,12 +15,11 @@ export function Roulette({
   const [scrollOffset, setScrollOffset] = useState(0);
   const [animating, setAnimating] = useState(false);
   const containerRef = useRef(null);
+  const viewportRef = useRef(null);
   const itemWidth = 130;
   const gapPx = 8; // 0.5rem — должен совпадать с gap в Roulette.css
-  const visibleCount = 5;
   const duration = durationMs ?? ROULETTE_SCROLL_DURATION_MS;
-  /** Позиция выигрыша: при наступлении на линию — передний (левый) край карточки совпадает с центром вьюпорта */
-  const viewportWidth = visibleCount * itemWidth + (visibleCount - 1) * gapPx;
+  /** Позиция выигрыша: при наступлении на линию — передний (левый) край карточки совпадает с центром вьюпорта (линия 50%) */
 
   useEffect(() => {
     if (!isAnimating || !prizes.length || winningIndex === undefined) return;
@@ -29,38 +28,45 @@ export function Roulette({
     const itemCount = prizes.length;
     const totalTrackWidth = itemCount * itemWidth + (itemCount - 1) * gapPx;
     const winningItemLeftEdge = winningIndex * (itemWidth + gapPx);
-    const viewportCenter = viewportWidth / 2;
-    const targetOffset = winningItemLeftEdge - viewportCenter;
-    const clampedTarget = Math.max(
-      0,
-      Math.min(targetOffset, totalTrackWidth - viewportWidth)
-    );
 
-    const startTime = Date.now();
+    const runAnimation = () => {
+      const measuredWidth = viewportRef.current?.offsetWidth ?? 0;
+      const viewportWidth = measuredWidth > 0 ? measuredWidth : totalTrackWidth;
+      const viewportCenter = viewportWidth / 2;
+      const targetOffset = winningItemLeftEdge - viewportCenter;
+      const clampedTarget = Math.max(
+        0,
+        Math.min(targetOffset, totalTrackWidth - viewportWidth)
+      );
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, EASING_POWER);
-      const currentOffset = eased * clampedTarget;
-      setScrollOffset(currentOffset);
+      const startTime = Date.now();
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        setAnimating(false);
-        onComplete?.();
-      }
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, EASING_POWER);
+        const currentOffset = eased * clampedTarget;
+        setScrollOffset(currentOffset);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setAnimating(false);
+          onComplete?.();
+        }
+      };
+
+      requestAnimationFrame(animate);
     };
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(runAnimation);
   }, [isAnimating, prizes.length, winningIndex, onComplete, duration]);
 
   if (!prizes.length) return null;
 
   return (
     <div className="roulette" ref={containerRef}>
-      <div className="roulette__viewport">
+      <div className="roulette__viewport" ref={viewportRef}>
         <div
           className="roulette__track"
           style={{
