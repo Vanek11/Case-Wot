@@ -118,6 +118,137 @@
   max-width: 140px;
 }
 
+.admin-dashboard__current-values {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(0, 212, 255, 0.06);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+}
+
+.admin-dashboard__current-values h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: #00d4ff;
+}
+
+.admin-dashboard__current-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+
+.admin-dashboard__current-grid span {
+  white-space: nowrap;
+}
+
+.admin-dashboard__delete-wrap {
+  margin-top: 1rem;
+}
+
+.admin-dashboard__delete-wrap .btn--danger {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(220, 38, 38, 0.5);
+}
+
+.admin-dashboard__log {
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.admin-dashboard__log-empty {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-dashboard__log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-dashboard__log-entry {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 0.75rem;
+}
+
+.admin-dashboard__log-entry:last-child {
+  border-bottom: none;
+}
+
+.admin-dashboard__log-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: center;
+  color: #94a3b8;
+  margin-bottom: 0.2rem;
+}
+
+.admin-dashboard__log-time {
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.admin-dashboard__log-who {
+  color: #00d4ff;
+}
+
+.admin-dashboard__log-action {
+  color: #e2e8f0;
+}
+
+.admin-dashboard__log-target {
+  color: #cbd5e1;
+}
+
+.admin-dashboard__log-details {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  padding-left: 0.25rem;
+}
+
+.admin-dashboard__log-was-now {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-dashboard__log-was-now-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.admin-dashboard__log-label {
+  color: #94a3b8;
+  min-width: fit-content;
+}
+
+.admin-dashboard__log-was {
+  color: #64748b;
+  text-decoration: line-through;
+}
+
+.admin-dashboard__log-arrow {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.admin-dashboard__log-now {
+  color: #00d4ff;
+  font-weight: 600;
+}
+
 .admin-dashboard__sim-cases {
   display: flex;
   flex-wrap: wrap;

@@ -9,6 +9,7 @@ import { Inventory } from "./components/Inventory";
 import { ProgressBar } from "./components/ProgressBar";
 import { Achievements } from "./components/Achievements";
 import { AdminDashboard } from "./components/AdminDashboard";
+import { ConfirmModal } from "./components/ConfirmModal";
 import {
   getInitialState,
   GUARANTEED_AFTER,
@@ -38,6 +39,7 @@ function App() {
   const [showAdmin, setShowAdmin] = useState(false);
   const [showChances, setShowChances] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -59,11 +61,14 @@ function App() {
   }, []);
 
   const handleReset = useCallback(() => {
-    if (window.confirm(t("confirm_reset", lang))) {
-      clearState(user?.id);
-      setState(getInitialState());
-    }
-  }, [lang, user?.id]);
+    setShowResetConfirm(true);
+  }, []);
+
+  const handleResetConfirm = useCallback(() => {
+    clearState(user?.id);
+    setState(getInitialState());
+    setShowResetConfirm(false);
+  }, [user?.id]);
 
   const handleSelectCase = useCallback((caseItem) => {
     setSelectedCase(caseItem);
@@ -328,6 +333,17 @@ function App() {
           />
         )}
       </main>
+
+      <ConfirmModal
+        open={showResetConfirm}
+        title={t("reset_progress", lang)}
+        message={t("confirm_reset", lang)}
+        confirmLabel={lang === "ru" ? "Сбросить" : "Reset"}
+        cancelLabel={t("cancel", lang)}
+        variant="danger"
+        onConfirm={handleResetConfirm}
+        onCancel={() => setShowResetConfirm(false)}
+      />
     </div>
   );
 }

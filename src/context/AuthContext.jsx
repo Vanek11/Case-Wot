@@ -73,4 +73,12 @@ AuthProvider.registerUser = (loginName, password) => {
   return { ok: true };
 };
 
+/** Удалить пользователя из списка (профиль). Возвращает true если удалён. */
+AuthProvider.removeUser = (userId) => {
+  const users = AuthProvider.getUsers().filter((u) => String(u.id) !== String(userId));
+  if (users.length === 0) return false;
+  localStorage.setItem("case-wot-users", JSON.stringify(users));
+  return true;
+};
+
 export const useAuth = () => useContext(AuthContext);

@@ -8,6 +8,8 @@ import { computeAccumulatedFromInventory } from "./dropLogic.js";
 const STORAGE_KEY = "case-wot-state";
 const USER_PREFIX = "case-wot-user-";
 const SETTINGS_KEY = "case-wot-settings";
+const ADMIN_LOG_KEY = "case-wot-admin-log";
+const ADMIN_LOG_MAX = 500;
 
 const BRANCH_PROGRESS_IDS = ["nation_ussr", "nation_usa", "nation_germany", "nation_uk", "nation_france", "nation_czechoslovakia", "nation_china", "nation_japan", "nation_poland", "nation_sweden", "nation_italy", "nation_alliance", "class_ht", "class_mt", "class_lt", "class_td", "class_spg"];
 
@@ -85,5 +87,31 @@ export const saveSettings = (settings) => {
     return true;
   } catch {
     return false;
+  }
+};
+
+/**
+ * Журнал изменений админа: кто, когда, что менял (баланс, накопленные призы, удаление профиля).
+ * @param entry { timestamp, adminLogin, adminId, targetUserId, targetLogin, action: 'balance'|'accumulated'|'delete_profile', details }
+ */
+export const appendAdminLogEntry = (entry) => {
+  try {
+    const raw = localStorage.getItem(ADMIN_LOG_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    list.unshift({ ...entry, timestamp: entry.timestamp ?? Date.now() });
+    const trimmed = list.slice(0, ADMIN_LOG_MAX);
+    localStorage.setItem(ADMIN_LOG_KEY, JSON.stringify(trimmed));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const loadAdminLog = () => {
+  try {
+    const raw = localStorage.getItem(ADMIN_LOG_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
   }
 };
