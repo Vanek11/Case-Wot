@@ -194,6 +194,20 @@
   max-width: 140px;
 }
 
+.admin-dashboard__deduction-note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.admin-dashboard__input--full {
+  width: 100%;
+  max-width: none;
+}
+
 .admin-dashboard__current-values {
   margin-bottom: 1rem;
   padding: 0.75rem;

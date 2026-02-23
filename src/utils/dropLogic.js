@@ -177,6 +177,7 @@ export const getInitialState = () => ({
   balance: 1000,
   branchProgressWonPrizeIds: [],
   accumulatedResources: { ...DEFAULT_ACCUMULATED },
+  deductionLog: [],
 });
 
 /** Сумма ресурсов из инвентаря — для миграции старых сохранений */

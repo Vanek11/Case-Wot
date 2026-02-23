@@ -196,7 +196,7 @@ function App() {
       <main className="app__main">
         {mainTab === "inventory" && (
           <div className="app__inventory-tab">
-            <Inventory inventory={state.inventory} accumulatedResources={state.accumulatedResources} lang={lang} />
+            <Inventory inventory={state.inventory} accumulatedResources={state.accumulatedResources} deductionLog={state.deductionLog} lang={lang} />
           </div>
         )}
 

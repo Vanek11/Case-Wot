@@ -17,6 +17,7 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
   const [confirmModal, setConfirmModal] = useState({ open: false });
   const [adminLog, setAdminLog] = useState(() => loadAdminLog());
   const [playerPanelExpanded, setPlayerPanelExpanded] = useState(false);
+  const [accDeductionNote, setAccDeductionNote] = useState("");
 
   const userList = users || AuthProvider.getUsers();
   const selectedUser = userList.find((u) => u.id === selectedUserId);
@@ -125,16 +126,34 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
       tickets: parseVal(accEdit.tickets, prev.tickets),
     };
     state.accumulatedResources = next;
-    saveState(state, selectedUserId);
     const labels = { credits: t("credits", lang), bonds: t("bonds", lang), freexp: t("freexp", lang), tickets: t("tickets", lang) };
     const parts = ["credits", "bonds", "freexp", "tickets"]
       .filter((k) => (prev[k] ?? 0) !== (next[k] ?? 0))
       .map((k) => `${labels[k]}: ${formatNum(prev[k])} → ${formatNum(next[k])}`);
     const details = parts.length ? parts.join("; ") : (lang === "ru" ? "Без изменений" : "No changes");
     logEntry("accumulated", selectedUserId, selectedUser.login, details);
+    const deductionNote = typeof accDeductionNote === "string" ? accDeductionNote.trim() : "";
+    const deltaCredits = Math.max(0, (prev.credits ?? 0) - (next.credits ?? 0));
+    const deltaBonds = Math.max(0, (prev.bonds ?? 0) - (next.bonds ?? 0));
+    const deltaFreexp = Math.max(0, (prev.freexp ?? 0) - (next.freexp ?? 0));
+    const deltaTickets = Math.max(0, (prev.tickets ?? 0) - (next.tickets ?? 0));
+    if (deltaCredits > 0 || deltaBonds > 0 || deltaFreexp > 0 || deltaTickets > 0) {
+      const log = state.deductionLog ?? [];
+      log.push({
+        timestamp: Date.now(),
+        credits: deltaCredits,
+        bonds: deltaBonds,
+        freexp: deltaFreexp,
+        tickets: deltaTickets,
+        note: deductionNote,
+      });
+      state.deductionLog = log.slice(-100);
+    }
+    saveState(state, selectedUserId);
     setAccEdit({ credits: "", bonds: "", freexp: "", tickets: "" });
+    setAccDeductionNote("");
     if (String(selectedUserId) === String(currentUserId) && onStateUpdated) onStateUpdated(state);
-  }, [selectedUserId, selectedUser, accEdit, currentUserId, onStateUpdated, logEntry, lang]);
+  }, [selectedUserId, selectedUser, accEdit, currentUserId, onStateUpdated, logEntry, lang, accDeductionNote]);
 
   const handleSaveBalance = useCallback(() => {
     if (!selectedUserId || !selectedUser) return;
@@ -361,6 +380,16 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
                             />
                           </label>
                         </div>
+                        <label className="admin-dashboard__deduction-note">
+                          <span>{lang === "ru" ? "Примечание (за что списали)" : "Note (reason)"}</span>
+                          <input
+                            type="text"
+                            value={accDeductionNote}
+                            onChange={(e) => setAccDeductionNote(e.target.value)}
+                            placeholder={lang === "ru" ? "Напр.: выполнение задания" : "e.g. task completed"}
+                            className="admin-dashboard__input admin-dashboard__input--full"
+                          />
+                        </label>
                         <button className="btn btn--secondary" onClick={handleSaveAccumulated}>
                           Сохранить накопленные
                         </button>

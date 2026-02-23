@@ -38,6 +38,7 @@ const migrateState = (parsed) => {
   if (!parsed.accumulatedResources) {
     parsed.accumulatedResources = computeAccumulatedFromInventory(parsed.inventory);
   }
+  if (!Array.isArray(parsed.deductionLog)) parsed.deductionLog = [];
   return parsed;
 };
 
