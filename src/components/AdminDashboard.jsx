@@ -16,6 +16,7 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
   const [simRunning, setSimRunning] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ open: false });
   const [adminLog, setAdminLog] = useState(() => loadAdminLog());
+  const [playerPanelExpanded, setPlayerPanelExpanded] = useState(false);
 
   const userList = users || AuthProvider.getUsers();
   const selectedUser = userList.find((u) => u.id === selectedUserId);
@@ -189,6 +190,7 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
             AuthProvider.removeUser(targetId);
             logEntry("delete_profile", targetId, targetLogin, lang === "ru" ? "Профиль удалён" : "Profile deleted");
             setSelectedUserId(null);
+            setPlayerPanelExpanded(false);
             setBalanceEdit("");
             setAccEdit({ credits: "", bonds: "", freexp: "", tickets: "" });
             setConfirmModal({ open: false });
@@ -247,126 +249,136 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
 
       <section className="admin-dashboard__section">
         <h4>Игроки</h4>
-        <div className="admin-dashboard__players">
-          {userList.map((u) => (
-            <div
-              key={u.id}
-              className={`admin-dashboard__player ${
-                selectedUserId === u.id ? "admin-dashboard__player--selected" : ""
-              }`}
-              onClick={() => {
-                setSelectedUserId(u.id);
-                const state = loadState(u.id);
-                setBalanceEdit(state?.balance?.toString() ?? "1000");
-                const acc = state?.accumulatedResources ?? {};
-                setAccEdit({
-                  credits: String(acc.credits ?? 0),
-                  bonds: String(acc.bonds ?? 0),
-                  freexp: String(acc.freexp ?? 0),
-                  tickets: String(acc.tickets ?? 0),
-                });
-              }}
-            >
-              <span>{u.login}</span>
-              <span className="admin-dashboard__role">{u.role}</span>
-              {loadState(u.id) && (
-                <span>Баланс: {loadState(u.id).balance ?? 0}</span>
-              )}
-            </div>
-          ))}
+        <div className="admin-dashboard__players admin-dashboard__players--scroll">
+          {userList.map((u) => {
+            const isSelected = selectedUserId === u.id;
+            const isExpanded = isSelected && playerPanelExpanded;
+            return (
+              <div key={u.id} className="admin-dashboard__player-block">
+                <div
+                  className={`admin-dashboard__player ${isSelected ? "admin-dashboard__player--selected" : ""} ${isExpanded ? "admin-dashboard__player--expanded" : ""}`}
+                  onClick={() => {
+                    if (isSelected) {
+                      setPlayerPanelExpanded(!playerPanelExpanded);
+                    } else {
+                      setSelectedUserId(u.id);
+                      setPlayerPanelExpanded(true);
+                      const state = loadState(u.id);
+                      setBalanceEdit(state?.balance?.toString() ?? "1000");
+                      const acc = state?.accumulatedResources ?? {};
+                      setAccEdit({
+                        credits: String(acc.credits ?? 0),
+                        bonds: String(acc.bonds ?? 0),
+                        freexp: String(acc.freexp ?? 0),
+                        tickets: String(acc.tickets ?? 0),
+                      });
+                    }
+                  }}
+                >
+                  <span className="admin-dashboard__player-chevron" aria-hidden>
+                    {isExpanded ? "▼" : "▶"}
+                  </span>
+                  <span>{u.login}</span>
+                  <span className="admin-dashboard__role">{u.role}</span>
+                  {loadState(u.id) && (
+                    <span>Баланс: {formatNum(loadState(u.id).balance ?? 0)}</span>
+                  )}
+                </div>
+                {isExpanded && selectedUser && (() => {
+                  const currentState = loadState(selectedUserId);
+                  const acc = currentState?.accumulatedResources ?? {};
+                  return (
+                    <div className="admin-dashboard__player-panel" onClick={(e) => e.stopPropagation()}>
+                      <div className="admin-dashboard__current-values">
+                        <h5>{t("current_values", lang)} ({selectedUser.login})</h5>
+                        <div className="admin-dashboard__current-grid">
+                          <span>{lang === "ru" ? "Баланс" : "Balance"}: {formatNum(currentState?.balance ?? 0)}</span>
+                          <span>{t("credits", lang)}: {formatNum(acc.credits)}</span>
+                          <span>{t("bonds", lang)}: {formatNum(acc.bonds)}</span>
+                          <span>{t("freexp", lang)}: {formatNum(acc.freexp)}</span>
+                          <span>{t("tickets", lang)}: {formatNum(acc.tickets)}</span>
+                        </div>
+                      </div>
+                      <div className="admin-dashboard__balance-edit">
+                        <h5>Изменить баланс: {selectedUser.login}</h5>
+                        <input
+                          type="number"
+                          value={balanceEdit}
+                          onChange={(e) => setBalanceEdit(e.target.value)}
+                          min={0}
+                          className="admin-dashboard__input"
+                        />
+                        <button className="btn btn--secondary" onClick={handleSaveBalance}>
+                          Сохранить
+                        </button>
+                      </div>
+                      <div className="admin-dashboard__balance-edit admin-dashboard__accumulated-edit">
+                        <h5>Накопленные призы (кредиты, боны, свободный опыт, билеты натиска)</h5>
+                        <p className="admin-dashboard__hint">При выдаче призов игроку — уменьшите значения. Можно ввести выражение: 4000000-2500000 → 1500000</p>
+                        <div className="admin-dashboard__acc-grid">
+                          <label>
+                            <span>Кредиты</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={accEdit.credits}
+                              onChange={(e) => setAccEdit((a) => ({ ...a, credits: e.target.value }))}
+                              placeholder="4000000-2500000"
+                              className="admin-dashboard__input"
+                            />
+                          </label>
+                          <label>
+                            <span>Боны</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={accEdit.bonds}
+                              onChange={(e) => setAccEdit((a) => ({ ...a, bonds: e.target.value }))}
+                              placeholder="100-50"
+                              className="admin-dashboard__input"
+                            />
+                          </label>
+                          <label>
+                            <span>Свободный опыт</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={accEdit.freexp}
+                              onChange={(e) => setAccEdit((a) => ({ ...a, freexp: e.target.value }))}
+                              placeholder="50000-10000"
+                              className="admin-dashboard__input"
+                            />
+                          </label>
+                          <label>
+                            <span>Билеты натиска</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={accEdit.tickets}
+                              onChange={(e) => setAccEdit((a) => ({ ...a, tickets: e.target.value }))}
+                              placeholder="20-5"
+                              className="admin-dashboard__input"
+                            />
+                          </label>
+                        </div>
+                        <button className="btn btn--secondary" onClick={handleSaveAccumulated}>
+                          Сохранить накопленные
+                        </button>
+                      </div>
+                      {canDeleteProfile && (
+                        <div className="admin-dashboard__delete-wrap">
+                          <button type="button" className="btn btn--danger" onClick={handleDeleteProfileClick}>
+                            {t("delete_profile", lang)}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            );
+          })}
         </div>
-
-        {selectedUser && (() => {
-          const currentState = loadState(selectedUserId);
-          const acc = currentState?.accumulatedResources ?? {};
-          return (
-          <>
-            <div className="admin-dashboard__current-values">
-              <h5>{t("current_values", lang)} ({selectedUser.login})</h5>
-              <div className="admin-dashboard__current-grid">
-                <span>{lang === "ru" ? "Баланс" : "Balance"}: {formatNum(currentState?.balance ?? 0)}</span>
-                <span>{t("credits", lang)}: {formatNum(acc.credits)}</span>
-                <span>{t("bonds", lang)}: {formatNum(acc.bonds)}</span>
-                <span>{t("freexp", lang)}: {formatNum(acc.freexp)}</span>
-                <span>{t("tickets", lang)}: {formatNum(acc.tickets)}</span>
-              </div>
-            </div>
-            <div className="admin-dashboard__balance-edit">
-              <h5>Изменить баланс: {selectedUser.login}</h5>
-              <input
-                type="number"
-                value={balanceEdit}
-                onChange={(e) => setBalanceEdit(e.target.value)}
-                min={0}
-                className="admin-dashboard__input"
-              />
-              <button className="btn btn--secondary" onClick={handleSaveBalance}>
-                Сохранить
-              </button>
-            </div>
-            <div className="admin-dashboard__balance-edit admin-dashboard__accumulated-edit">
-              <h5>Накопленные призы (кредиты, боны, свободный опыт, билеты натиска)</h5>
-              <p className="admin-dashboard__hint">При выдаче призов игроку — уменьшите значения. Можно ввести выражение: 4000000-2500000 → 1500000</p>
-              <div className="admin-dashboard__acc-grid">
-                <label>
-                  <span>Кредиты</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={accEdit.credits}
-                    onChange={(e) => setAccEdit((a) => ({ ...a, credits: e.target.value }))}
-                    placeholder="4000000-2500000"
-                    className="admin-dashboard__input"
-                  />
-                </label>
-                <label>
-                  <span>Боны</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={accEdit.bonds}
-                    onChange={(e) => setAccEdit((a) => ({ ...a, bonds: e.target.value }))}
-                    placeholder="100-50"
-                    className="admin-dashboard__input"
-                  />
-                </label>
-                <label>
-                  <span>Свободный опыт</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={accEdit.freexp}
-                    onChange={(e) => setAccEdit((a) => ({ ...a, freexp: e.target.value }))}
-                    placeholder="50000-10000"
-                    className="admin-dashboard__input"
-                  />
-                </label>
-                <label>
-                  <span>Билеты натиска</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={accEdit.tickets}
-                    onChange={(e) => setAccEdit((a) => ({ ...a, tickets: e.target.value }))}
-                    placeholder="20-5"
-                    className="admin-dashboard__input"
-                  />
-                </label>
-              </div>
-              <button className="btn btn--secondary" onClick={handleSaveAccumulated}>
-                Сохранить накопленные
-              </button>
-            </div>
-            {canDeleteProfile && (
-              <div className="admin-dashboard__delete-wrap">
-                <button type="button" className="btn btn--danger" onClick={handleDeleteProfileClick}>
-                  {t("delete_profile", lang)}
-                </button>
-              </div>
-            )}
-          </>
-          );
-        })()}
       </section>
 
       <section className="admin-dashboard__section">

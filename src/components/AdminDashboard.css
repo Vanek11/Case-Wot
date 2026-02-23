@@ -4,7 +4,29 @@
   border-radius: 12px;
   padding: 1.25rem;
   max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   margin-top: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 212, 255, 0.45) rgba(0, 0, 0, 0.2);
+}
+
+.admin-dashboard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-dashboard::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.admin-dashboard::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.45);
+  border-radius: 4px;
+}
+
+.admin-dashboard::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.65);
 }
 
 .admin-dashboard__header {
@@ -35,23 +57,77 @@
   gap: 0.25rem;
 }
 
+.admin-dashboard__players--scroll {
+  max-height: 45vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+}
+
+.admin-dashboard__player-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 .admin-dashboard__player {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.5rem 0.6rem;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   cursor: pointer;
   border: 1px solid transparent;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .admin-dashboard__player:hover {
   border-color: rgba(0, 212, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .admin-dashboard__player--selected {
+  border-color: rgba(0, 212, 255, 0.5);
+}
+
+.admin-dashboard__player--expanded {
   border-color: #00d4ff;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.admin-dashboard__player-chevron {
+  font-size: 0.65rem;
+  color: #64748b;
+  width: 1rem;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.admin-dashboard__player--expanded .admin-dashboard__player-chevron {
+  color: #00d4ff;
+}
+
+.admin-dashboard__player-panel {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 0.75rem 0.6rem 1rem;
+  animation: admin-panel-open 0.2s ease-out;
+}
+
+@keyframes admin-panel-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .admin-dashboard__role {
@@ -154,12 +230,48 @@
   border: 1px solid rgba(220, 38, 38, 0.5);
 }
 
+/* Кастомный скроллбар */
+.admin-dashboard__players--scroll,
+.admin-dashboard__log {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 212, 255, 0.45) rgba(0, 0, 0, 0.25);
+}
+
+.admin-dashboard__players--scroll::-webkit-scrollbar,
+.admin-dashboard__log::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-dashboard__players--scroll::-webkit-scrollbar-track,
+.admin-dashboard__log::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
+.admin-dashboard__players--scroll::-webkit-scrollbar-thumb,
+.admin-dashboard__log::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.45);
+  border-radius: 4px;
+}
+
+.admin-dashboard__players--scroll::-webkit-scrollbar-thumb:hover,
+.admin-dashboard__log::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.65);
+}
+
+.admin-dashboard__players--scroll::-webkit-scrollbar-thumb:active,
+.admin-dashboard__log::-webkit-scrollbar-thumb:active {
+  background: #00d4ff;
+}
+
 .admin-dashboard__log {
   max-height: 200px;
   overflow-y: auto;
   background: rgba(0, 0, 0, 0.25);
   border-radius: 8px;
   padding: 0.5rem;
+  scroll-behavior: smooth;
 }
 
 .admin-dashboard__log-empty {
