@@ -10,7 +10,7 @@ import { StatsPage } from "./components/StatsPage";
 import { ProgressBar } from "./components/ProgressBar";
 import { Achievements } from "./components/Achievements";
 import { AdminDashboard } from "./components/AdminDashboard";
-import { ConfirmModal } from "./components/ConfirmModal";
+import { ConfirmModal } from "./components/ConfirmModal"; 
 import {
   getInitialState,
   GUARANTEED_AFTER,
