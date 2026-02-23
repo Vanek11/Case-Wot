@@ -16,8 +16,19 @@ export function Roulette({
   const [animating, setAnimating] = useState(false);
   const containerRef = useRef(null);
   const viewportRef = useRef(null);
-  const itemWidth = 130;
-  const gapPx = 8; // 0.5rem — должен совпадать с gap в Roulette.css
+  const getItemWidth = () => {
+    if (typeof window === "undefined") return 130;
+    const w = window.innerWidth;
+    return w <= 480 ? 82 : w <= 768 ? 100 : 130;
+  };
+  const [itemWidth, setItemWidth] = useState(getItemWidth);
+  const gapPx = 8;
+  useEffect(() => {
+    const updateWidth = () => setItemWidth(getItemWidth());
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, [prizes.length]);
   const duration = durationMs ?? ROULETTE_SCROLL_DURATION_MS;
   /** Позиция выигрыша: при наступлении на линию — передний (левый) край карточки совпадает с центром вьюпорта (линия 50%) */
 

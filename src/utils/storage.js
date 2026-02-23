@@ -39,6 +39,7 @@ const migrateState = (parsed) => {
     parsed.accumulatedResources = computeAccumulatedFromInventory(parsed.inventory);
   }
   if (!Array.isArray(parsed.deductionLog)) parsed.deductionLog = [];
+  if (parsed.lastDailyBonusDate === undefined) parsed.lastDailyBonusDate = null;
   return parsed;
 };
 
@@ -114,5 +115,26 @@ export const loadAdminLog = () => {
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
+  }
+};
+
+const SEASONAL_CASES_KEY = "case-wot-seasonal-cases";
+
+/** Сезонные кейсы (добавляются/удаляются админом). Формат: { id, name, image, cost, rewardType } */
+export const loadSeasonalCases = () => {
+  try {
+    const raw = localStorage.getItem(SEASONAL_CASES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveSeasonalCases = (list) => {
+  try {
+    localStorage.setItem(SEASONAL_CASES_KEY, JSON.stringify(list || []));
+    return true;
+  } catch {
+    return false;
   }
 };

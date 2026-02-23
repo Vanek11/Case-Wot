@@ -118,6 +118,30 @@ const resetCases = NATIONS.filter((n) => getTanksByNation(n).length > 0).slice(0
 export const cases = [...nationCases, ...classCases, ...personalMissionCases, ...specialLbzCases, ...resetCases];
 
 export const getCaseById = (id) => cases.find((c) => c.id === id);
+
+/** Найти кейс по id среди обычных и сезонных (seasonalList — результат resolveSeasonalCases). */
+export const getCaseByIdWithSeasonal = (id, seasonalList = []) =>
+  seasonalList.find((c) => c.id === id) || cases.find((c) => c.id === id);
+
+/**
+ * Превращает сырой список сезонных кейсов из хранилища в полные объекты кейсов с пулом призов (commonResources).
+ * @param raw Array<{ id, name, image?, cost?, rewardType? }>
+ */
+export const resolveSeasonalCases = (raw) => {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((r) => ({
+    id: r.id,
+    name: r.name,
+    nameKey: r.name,
+    image: r.image || "/images/cases/seasonal.png",
+    cost: r.cost ?? 10,
+    rewardType: r.rewardType ?? "branch_reset",
+    type: "seasonal",
+    filter: r.id,
+    prizes: [...commonResources],
+  }));
+};
+
 export const getCasesByType = (type) => cases.filter((c) => c.type === type);
 
 /** ID кейсов с прокачкой — для глобального учёта выигранных танков */

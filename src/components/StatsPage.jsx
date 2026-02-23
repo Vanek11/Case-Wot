@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { t } from "../config/i18n";
-import { getCaseById } from "../config/cases";
+import { getCaseByIdWithSeasonal } from "../config/cases";
 import { GUARANTEED_AFTER } from "../utils/dropLogic";
 import "./StatsPage.css";
 
@@ -10,16 +10,17 @@ const TYPE_LABEL_KEYS = {
   personalMission: "tab_lbz",
   personalMissionSpecial: "tab_lbz",
   branch_reset: "by_reset",
+  seasonal: "tab_seasonal",
 };
 
-export function StatsPage({ state, lang }) {
+export function StatsPage({ state, lang, seasonalCases = [] }) {
   const totalOpened = state?.totalOpened ?? 0;
   const casesData = state?.cases ?? {};
 
   const byType = useMemo(() => {
     const map = {};
     Object.entries(casesData).forEach(([caseId, cState]) => {
-      const caseItem = getCaseById(caseId);
+      const caseItem = getCaseByIdWithSeasonal(caseId, seasonalCases);
       const type = caseItem?.type ?? "other";
       const key = type === "personalMissionSpecial" ? "personalMissionSpecial" : type;
       if (!map[key]) map[key] = { total: 0, cases: [] };
@@ -28,7 +29,7 @@ export function StatsPage({ state, lang }) {
       map[key].cases.push({ caseId, caseItem, totalOpened: opened, casesUntilGuaranteed: cState?.casesUntilGuaranteed ?? GUARANTEED_AFTER, closed: cState?.closed });
     });
     return Object.entries(map).sort((a, b) => b[1].total - a[1].total);
-  }, [casesData]);
+  }, [casesData, seasonalCases]);
 
   const topPrizes = useMemo(() => {
     const inventory = state?.inventory ?? [];
@@ -47,7 +48,7 @@ export function StatsPage({ state, lang }) {
     const list = [];
     Object.entries(casesData).forEach(([caseId, cState]) => {
       if (cState?.closed) return;
-      const caseItem = getCaseById(caseId);
+      const caseItem = getCaseByIdWithSeasonal(caseId, seasonalCases);
       const until = cState?.casesUntilGuaranteed ?? GUARANTEED_AFTER;
       list.push({
         caseId,
@@ -57,7 +58,7 @@ export function StatsPage({ state, lang }) {
       });
     });
     return list.sort((a, b) => a.casesUntilGuaranteed - b.casesUntilGuaranteed).slice(0, 12);
-  }, [casesData]);
+  }, [casesData, seasonalCases]);
 
   return (
     <div className="stats-page">
@@ -137,7 +138,7 @@ export function StatsPage({ state, lang }) {
             <tbody>
               {guaranteeProgress.map(({ caseId, caseItem, casesUntilGuaranteed, totalOpened: opened }) => (
                 <tr key={caseId}>
-                  <td>{caseItem ? t(caseItem.nameKey, lang) : caseId}</td>
+                  <td>{caseItem ? (caseItem.type === "seasonal" ? caseItem.name : t(caseItem.nameKey, lang)) : caseId}</td>
                   <td className="stats-page__until">{casesUntilGuaranteed}</td>
                   <td>{opened.toLocaleString("ru-RU")}</td>
                 </tr>

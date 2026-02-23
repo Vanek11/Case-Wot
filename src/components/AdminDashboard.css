@@ -51,6 +51,59 @@
   margin: 0 0 0.5rem;
 }
 
+.admin-dashboard__section h5 {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
+}
+
+.admin-dashboard__seasonal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  max-height: 20vh;
+  overflow-y: auto;
+}
+
+.admin-dashboard__seasonal-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.4rem 0.5rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.admin-dashboard__seasonal-name {
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.admin-dashboard__seasonal-id {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.admin-dashboard__seasonal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-dashboard__seasonal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.admin-dashboard__seasonal-form label span {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
 .admin-dashboard__players {
   display: flex;
   flex-direction: column;
@@ -405,4 +458,54 @@
 
 .admin-dashboard__table th {
   color: #00d4ff;
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard {
+    max-width: 100%;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    padding: 1rem;
+    max-height: 85vh;
+  }
+  .admin-dashboard__header {
+    flex-wrap: wrap;
+  }
+  .admin-dashboard__players--scroll {
+    max-height: 35vh;
+  }
+  .admin-dashboard__player {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.9rem;
+  }
+  .admin-dashboard__acc-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-dashboard__acc-grid .admin-dashboard__input {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard {
+    margin: 0.5rem;
+    padding: 0.75rem;
+  }
+  .admin-dashboard__section h4 {
+    font-size: 0.9rem;
+  }
+  .admin-dashboard__player-panel {
+    padding: 0.5rem 0.4rem 0.75rem;
+  }
+  .admin-dashboard__current-grid {
+    flex-direction: column;
+  }
+  .admin-dashboard__balance-edit {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-dashboard__input {
+    width: 100%;
+    max-width: none;
+  }
 }

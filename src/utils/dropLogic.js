@@ -178,6 +178,7 @@ export const getInitialState = () => ({
   branchProgressWonPrizeIds: [],
   accumulatedResources: { ...DEFAULT_ACCUMULATED },
   deductionLog: [],
+  lastDailyBonusDate: null,
 });
 
 /** Сумма ресурсов из инвентаря — для миграции старых сохранений */

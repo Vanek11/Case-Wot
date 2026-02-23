@@ -4,8 +4,7 @@ import { PrizeCard } from "./PrizeCard";
 import { Particles } from "./Particles";
 import { rollPrize, applyDrop, buildRouletteItems, getPoolForCase, GUARANTEED_AFTER } from "../utils/dropLogic";
 import { prizes } from "../config/prizes";
-import { ROULETTE_SCROLL_DURATION_MS } from "../config/settings";
-import { COUNTDOWN_ENABLED } from "../config/settings";
+import { ROULETTE_SCROLL_DURATION_MS, COUNTDOWN_ENABLED, DAILY_BONUS_BALANCE } from "../config/settings";
 import { t } from "../config/i18n";
 import "./CaseOpener.css";
 
@@ -108,7 +107,15 @@ export function CaseOpener({
   const handleClaim = useCallback(() => {
     if (!rouletteData) return;
     const cost = caseData?.cost ?? 0;
-    const newState = applyDrop(state, rouletteData.result, caseId, cost, rewardType);
+    let newState = applyDrop(state, rouletteData.result, caseId, cost, rewardType);
+    const today = new Date().toISOString().slice(0, 10);
+    if (newState.lastDailyBonusDate !== today && DAILY_BONUS_BALANCE > 0) {
+      newState = {
+        ...newState,
+        balance: (newState.balance ?? 0) + DAILY_BONUS_BALANCE,
+        lastDailyBonusDate: today,
+      };
+    }
     onStateChange(newState);
     onClose?.();
   }, [rouletteData, state, caseId, caseData?.cost, rewardType, onStateChange, onClose]);

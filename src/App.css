@@ -65,6 +65,51 @@
   color: #00d4ff;
 }
 
+@media (max-width: 768px) {
+  .app__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+  .app__header-left {
+    gap: 0.25rem;
+  }
+  .app__title {
+    font-size: 1rem;
+  }
+  .app__header-tabs {
+    flex-wrap: wrap;
+  }
+  .app__header-tabs .btn,
+  .app__header-right .btn {
+    min-height: 40px;
+    padding: 0.4rem 0.6rem;
+  }
+  .app__header-user {
+    font-size: 0.8rem;
+  }
+  .app__case-tabs {
+    flex-wrap: wrap;
+  }
+  .app__case-tab {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app__header {
+    padding: 0.4rem 0.5rem;
+  }
+  .app__title {
+    font-size: 0.95rem;
+  }
+  .app__main {
+    padding: 0.5rem 0.5rem 1rem;
+  }
+}
+
 .app__case-tabs {
   display: flex;
   gap: 0.25rem;

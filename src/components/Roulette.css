@@ -59,3 +59,32 @@
   transform: translateX(-50%);
   pointer-events: none;
 }
+
+@media (max-width: 768px) {
+  .roulette {
+    max-width: 100%;
+    padding: 0 0.25rem;
+  }
+  .roulette__viewport {
+    padding: 0.5rem 0;
+  }
+  .roulette__track {
+    gap: 0.35rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .roulette__viewport {
+    padding: 0.35rem 0;
+  }
+  .roulette__track {
+    gap: 0.25rem;
+  }
+  .roulette .prize-card {
+    transform: scale(0.85);
+  }
+  .roulette .prize-card img {
+    max-width: 72px;
+    max-height: 72px;
+  }
+}

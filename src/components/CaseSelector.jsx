@@ -10,7 +10,7 @@ const SPECIAL_UNLOCK_HINT = {
   projectmurat: "lbt_unlock_tf2clark",
 };
 
-export function CaseSelector({ activeCategory = "progress", selectedCaseId, onSelect, lang, casesStats, inventory }) {
+export function CaseSelector({ activeCategory = "progress", selectedCaseId, onSelect, lang, casesStats, inventory, seasonalCases = [] }) {
   const nationCases = getCasesByType("nation");
   const classCases = getCasesByType("class");
   const resetCases = getCasesByType("branch_reset");
@@ -76,6 +76,9 @@ export function CaseSelector({ activeCategory = "progress", selectedCaseId, onSe
             />
           )}
         </>
+      )}
+      {activeCategory === "seasonal" && seasonalCases.length > 0 && (
+        <CaseGroup title={t("tab_seasonal", lang)} items={seasonalCases} />
       )}
     </div>
   );

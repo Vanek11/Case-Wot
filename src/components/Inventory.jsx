@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { PrizeCard } from "./PrizeCard";
 import { t } from "../config/i18n";
-import { getCaseById } from "../config/cases";
+import { getCaseByIdWithSeasonal } from "../config/cases";
 import "./Inventory.css";
 
 const formatNumber = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n.toLocaleString("ru-RU"));
 const RESOURCE_TYPES = ["credits", "bonds", "freexp", "tickets"];
 
-export function Inventory({ inventory, accumulatedResources, deductionLog, lang }) {
+export function Inventory({ inventory, accumulatedResources, deductionLog, lang, seasonalCases = [] }) {
   const items = inventory || [];
   const [filterType, setFilterType] = useState("all");
   const [filterCaseId, setFilterCaseId] = useState("all");
@@ -131,8 +131,8 @@ export function Inventory({ inventory, accumulatedResources, deductionLog, lang 
             >
               <option value="all">{t("filter_all", lang)}</option>
               {uniqueCaseIds.map((cid) => {
-                const caseItem = getCaseById(cid);
-                const label = caseItem ? t(caseItem.nameKey, lang) : cid;
+                const caseItem = getCaseByIdWithSeasonal(cid, seasonalCases);
+                const label = caseItem ? (caseItem.type === "seasonal" ? caseItem.name : t(caseItem.nameKey, lang)) : cid;
                 return (
                   <option key={cid} value={cid}>
                     {label}

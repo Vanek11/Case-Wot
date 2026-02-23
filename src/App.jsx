@@ -15,8 +15,8 @@ import {
   getInitialState,
   GUARANTEED_AFTER,
 } from "./utils/dropLogic";
-import { cases as allCases } from "./config/cases";
-import { loadState, saveState, clearState, loadSettings, saveSettings } from "./utils/storage";
+import { cases as allCases, resolveSeasonalCases } from "./config/cases";
+import { loadState, saveState, clearState, loadSettings, saveSettings, loadSeasonalCases } from "./utils/storage";
 import { exportToJson, downloadFile } from "./utils/exportStats";
 import { t } from "./config/i18n";
 import "./App.css";
@@ -41,6 +41,7 @@ function App() {
   const [showChances, setShowChances] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [seasonalCases, setSeasonalCases] = useState(() => resolveSeasonalCases(loadSeasonalCases()));
 
   useEffect(() => {
     if (user) {
@@ -56,6 +57,14 @@ function App() {
   useEffect(() => {
     saveSettings(settings);
   }, [settings]);
+
+  useEffect(() => {
+    if (!showAdmin) setSeasonalCases(resolveSeasonalCases(loadSeasonalCases()));
+  }, [showAdmin]);
+
+  useEffect(() => {
+    if (caseCategoryTab === "seasonal" && seasonalCases.length === 0) setCaseCategoryTab("progress");
+  }, [caseCategoryTab, seasonalCases.length]);
 
   const handleStateChange = useCallback((newState) => {
     setState(newState);
@@ -196,6 +205,7 @@ function App() {
             lang={lang}
             currentUserId={user?.id}
             onStateUpdated={(s) => s && setState(s)}
+            onSeasonalCasesChange={() => setSeasonalCases(resolveSeasonalCases(loadSeasonalCases()))}
           />
         </div>
       )}
@@ -203,13 +213,13 @@ function App() {
       <main className="app__main">
         {mainTab === "inventory" && (
           <div className="app__inventory-tab">
-            <Inventory inventory={state.inventory} accumulatedResources={state.accumulatedResources} deductionLog={state.deductionLog} lang={lang} />
+            <Inventory inventory={state.inventory} accumulatedResources={state.accumulatedResources} deductionLog={state.deductionLog} lang={lang} seasonalCases={seasonalCases} />
           </div>
         )}
 
         {mainTab === "stats" && (
           <div className="app__stats-tab">
-            <StatsPage state={state} lang={lang} />
+            <StatsPage state={state} lang={lang} seasonalCases={seasonalCases} />
           </div>
         )}
 
@@ -237,15 +247,25 @@ function App() {
               >
                 {t("tab_lbz", lang)}
               </button>
+              {seasonalCases.length > 0 && (
+                <button
+                  type="button"
+                  className={`btn btn--ghost app__case-tab ${caseCategoryTab === "seasonal" ? "active" : ""}`}
+                  onClick={() => setCaseCategoryTab("seasonal")}
+                >
+                  {t("tab_seasonal", lang)}
+                </button>
+              )}
             </div>
             <CaseSelector
               activeCategory={caseCategoryTab}
-              selectedCaseId={null}
+              selectedCaseId={selectedCase?.id}
               onSelect={handleSelectCase}
               lang={lang}
               inventory={state.inventory}
-              casesStats={Object.fromEntries(
-                allCases.map((c) => [
+              seasonalCases={seasonalCases}
+              casesStats={Object.fromEntries([
+                ...allCases.map((c) => [
                   c.id,
                   state.cases?.[c.id]
                     ? {
@@ -254,8 +274,18 @@ function App() {
                         closed: state.cases[c.id].closed ?? false,
                       }
                     : { totalOpened: 0, casesUntilGuaranteed: GUARANTEED_AFTER, closed: false },
-                ])
-              )}
+                ]),
+                ...seasonalCases.map((c) => [
+                  c.id,
+                  state.cases?.[c.id]
+                    ? {
+                        totalOpened: state.cases[c.id].totalOpened ?? 0,
+                        casesUntilGuaranteed: state.cases[c.id].casesUntilGuaranteed ?? GUARANTEED_AFTER,
+                        closed: state.cases[c.id].closed ?? false,
+                      }
+                    : { totalOpened: 0, casesUntilGuaranteed: GUARANTEED_AFTER, closed: false },
+                ]),
+              ])}
             />
             <p className="app__hint">{t("choose_case", lang)}</p>
           </>
@@ -267,7 +297,7 @@ function App() {
               <button className="btn btn--ghost app__back-btn" onClick={handleBackToCases}>
                 ← {t("back", lang)}
               </button>
-              <h2 className="app__case-name">{t(caseData.nameKey, lang)}</h2>
+              <h2 className="app__case-name">{caseData.type === "seasonal" ? caseData.name : t(caseData.nameKey, lang)}</h2>
               <p className="app__case-cost">Стоимость: {caseData.cost ?? 10}</p>
               <div className="app__stats">
                 <div className="stat-card">

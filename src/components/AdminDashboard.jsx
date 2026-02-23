@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { AuthProvider, useAuth } from "../context/AuthContext";
-import { loadState, saveState, clearState, appendAdminLogEntry, loadAdminLog } from "../utils/storage";
+import { loadState, saveState, clearState, appendAdminLogEntry, loadAdminLog, loadSeasonalCases, saveSeasonalCases } from "../utils/storage";
 import { rollPrize } from "../utils/dropLogic";
 import { cases as allCases, getCaseById } from "../config/cases";
 import { t } from "../config/i18n";
 import { ConfirmModal } from "./ConfirmModal";
 import "./AdminDashboard.css";
 
-export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpdated }) {
+export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpdated, onSeasonalCasesChange }) {
   const { user: currentUser } = useAuth();
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [balanceEdit, setBalanceEdit] = useState("");
@@ -18,10 +18,42 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
   const [adminLog, setAdminLog] = useState(() => loadAdminLog());
   const [playerPanelExpanded, setPlayerPanelExpanded] = useState(false);
   const [accDeductionNote, setAccDeductionNote] = useState("");
+  const [seasonalList, setSeasonalList] = useState(() => loadSeasonalCases());
+  const [seasonalForm, setSeasonalForm] = useState({ name: "", image: "", cost: "10" });
 
   const userList = users || AuthProvider.getUsers();
   const selectedUser = userList.find((u) => u.id === selectedUserId);
   const canDeleteProfile = selectedUser && userList.length > 1;
+
+  const handleAddSeasonalCase = useCallback(() => {
+    const name = seasonalForm.name.trim();
+    if (!name) return;
+    const cost = parseInt(seasonalForm.cost, 10) || 10;
+    const list = [
+      ...seasonalList,
+      {
+        id: "seasonal_" + Date.now(),
+        name,
+        image: seasonalForm.image.trim() || undefined,
+        cost: isNaN(cost) ? 10 : cost,
+        rewardType: "branch_reset",
+      },
+    ];
+    saveSeasonalCases(list);
+    setSeasonalList(list);
+    setSeasonalForm({ name: "", image: "", cost: "10" });
+    onSeasonalCasesChange?.();
+  }, [seasonalForm, seasonalList, onSeasonalCasesChange]);
+
+  const handleRemoveSeasonalCase = useCallback(
+    (id) => {
+      const list = seasonalList.filter((c) => c.id !== id);
+      saveSeasonalCases(list);
+      setSeasonalList(list);
+      onSeasonalCasesChange?.();
+    },
+    [seasonalList, onSeasonalCasesChange]
+  );
 
   const logEntry = useCallback((action, targetUserId, targetLogin, details) => {
     appendAdminLogEntry({
@@ -442,6 +474,61 @@ export function AdminDashboard({ users, onClose, lang, currentUserId, onStateUpd
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      <section className="admin-dashboard__section">
+        <h4>{t("seasonal_section", lang)}</h4>
+        <div className="admin-dashboard__seasonal-list">
+          {seasonalList.map((c) => (
+            <div key={c.id} className="admin-dashboard__seasonal-item">
+              <span className="admin-dashboard__seasonal-name">{c.name}</span>
+              <span className="admin-dashboard__seasonal-id">{c.id}</span>
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm btn--danger"
+                onClick={() => handleRemoveSeasonalCase(c.id)}
+              >
+                {t("seasonal_delete", lang)}
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="admin-dashboard__seasonal-form">
+          <h5>{t("add_seasonal_case", lang)}</h5>
+          <label>
+            <span>{t("seasonal_name", lang)}</span>
+            <input
+              type="text"
+              value={seasonalForm.name}
+              onChange={(e) => setSeasonalForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="Новый год"
+              className="admin-dashboard__input"
+            />
+          </label>
+          <label>
+            <span>{t("seasonal_image", lang)}</span>
+            <input
+              type="text"
+              value={seasonalForm.image}
+              onChange={(e) => setSeasonalForm((f) => ({ ...f, image: e.target.value }))}
+              placeholder="/images/cases/seasonal.png"
+              className="admin-dashboard__input"
+            />
+          </label>
+          <label>
+            <span>{t("seasonal_cost", lang)}</span>
+            <input
+              type="number"
+              min={1}
+              value={seasonalForm.cost}
+              onChange={(e) => setSeasonalForm((f) => ({ ...f, cost: e.target.value }))}
+              className="admin-dashboard__input"
+            />
+          </label>
+          <button type="button" className="btn btn--secondary" onClick={handleAddSeasonalCase}>
+            {t("seasonal_add_btn", lang)}
+          </button>
         </div>
       </section>
 
