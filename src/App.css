@@ -216,6 +216,34 @@
   background: rgba(0, 212, 255, 0.65);
 }
 
+.app__stats-tab {
+  padding: 1rem 0;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 212, 255, 0.45) rgba(0, 0, 0, 0.2);
+}
+
+.app__stats-tab::-webkit-scrollbar {
+  width: 8px;
+}
+
+.app__stats-tab::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.app__stats-tab::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.45);
+  border-radius: 4px;
+}
+
+.app__stats-tab::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.65);
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;

@@ -6,6 +6,7 @@ import { CaseSelector } from "./components/CaseSelector";
 import { DropHistory } from "./components/DropHistory";
 import { ChancesPage } from "./components/ChancesPage";
 import { Inventory } from "./components/Inventory";
+import { StatsPage } from "./components/StatsPage";
 import { ProgressBar } from "./components/ProgressBar";
 import { Achievements } from "./components/Achievements";
 import { AdminDashboard } from "./components/AdminDashboard";
@@ -33,7 +34,7 @@ function App() {
   const { theme, lang } = settings;
 
   const [screen, setScreen] = useState("cases"); // cases | case-detail | opener
-  const [mainTab, setMainTab] = useState("cases"); // cases | inventory
+  const [mainTab, setMainTab] = useState("cases"); // cases | inventory | stats
   const [caseCategoryTab, setCaseCategoryTab] = useState("progress"); // progress | reset | lbz
   const [selectedCase, setSelectedCase] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -146,6 +147,12 @@ function App() {
             >
               {t("inventory", lang)}
             </button>
+            <button
+              className={`btn btn--ghost btn--sm ${mainTab === "stats" ? "active" : ""}`}
+              onClick={() => setMainTab("stats")}
+            >
+              {t("stats_title", lang)}
+            </button>
           </div>
           <div className="app__header-user">
             <span className="app__user">{user.login}{isAdmin && " (админ)"}</span>
@@ -197,6 +204,12 @@ function App() {
         {mainTab === "inventory" && (
           <div className="app__inventory-tab">
             <Inventory inventory={state.inventory} accumulatedResources={state.accumulatedResources} deductionLog={state.deductionLog} lang={lang} />
+          </div>
+        )}
+
+        {mainTab === "stats" && (
+          <div className="app__stats-tab">
+            <StatsPage state={state} lang={lang} />
           </div>
         )}
 

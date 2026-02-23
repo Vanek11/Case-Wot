@@ -1,0 +1,83 @@
+.stats-page {
+  background: rgba(15, 15, 25, 0.8);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  max-width: 560px;
+}
+
+.stats-page__title {
+  font-size: 1.25rem;
+  color: #00d4ff;
+  margin: 0 0 1.25rem;
+}
+
+.stats-page__section {
+  margin-bottom: 1.5rem;
+}
+
+.stats-page__section:last-child {
+  margin-bottom: 0;
+}
+
+.stats-page__section-title {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin: 0 0 0.5rem;
+}
+
+.stats-page__big-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #00d4ff;
+  margin: 0;
+}
+
+.stats-page__hint {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 0.5rem;
+}
+
+.stats-page__table-wrap {
+  overflow-x: auto;
+}
+
+.stats-page__table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+}
+
+.stats-page__table th,
+.stats-page__table td {
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+.stats-page__table th {
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+.stats-page__table td {
+  color: #cbd5e1;
+}
+
+.stats-page__prize-name {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats-page__until {
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+.stats-page__empty {
+  color: #64748b;
+  font-style: italic;
+}
